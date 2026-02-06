@@ -51,9 +51,8 @@
             width: 100%;
             height: 100%;
             z-index: 0;
-            /* Opacidad ajustada para que el león se vea pero no compita con el texto */
             opacity: 1; 
-            pointer-events: none; /* Asegura que no interfiera con los clics */
+            pointer-events: none;
         }
         
         .content-wrapper {
@@ -62,7 +61,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: rgba(15, 30, 41, 0.4); /* Sutil oscurecimiento para legibilidad sobre el león */
+            background: rgba(15, 30, 41, 0.4);
         }
         
         .header {
@@ -83,7 +82,7 @@
         }
         
         .logo {
-            height: 55px; /* Ajustado ligeramente para PNGs */
+            height: 55px;
             width: auto;
             object-fit: contain;
             transition: transform 0.3s ease;
@@ -263,6 +262,12 @@
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid #ddd;
+            cursor: zoom-in; /* Indica que se puede hacer clic */
+            transition: border-color 0.3s;
+        }
+
+        .folleto-container:hover {
+            border-color: var(--gold);
         }
 
         .folleto-img {
@@ -271,6 +276,41 @@
             display: block;
             border-radius: 4px;
             transition: transform 0.3s ease;
+        }
+
+        /* ESTILOS NUEVOS PARA EL ZOOM (LIGHTBOX) */
+        .lightbox-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 9999; /* Muy alto para tapar todo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .lightbox-img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            animation: scaleUp 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
         
         .links-section {
@@ -525,6 +565,8 @@
         // Componente Principal
         function App() {
             const [currentView, setCurrentView] = useState('welcome');
+            // NUEVO ESTADO: Controla si el folleto está ampliado
+            const [isZoomed, setIsZoomed] = useState(false);
             
             // REEMPLAZO DE LOGOS: SVG -> PNG
             const UDG_LOGO = "udg.svg";
@@ -566,14 +608,22 @@
                     <div className="content-text">
                         <p>Los trabajadores al servicio de la Universidad, tendrás los siguientes derechos:</p>
                         <ol>
-                            <li>Conservar su horario de labores y solicitar el cambio del mismo...</li>
-                            <li>Conservar su adscripción de dependencia...</li>
-                            <li>El trabajador tendrá el derecho a que se reubique de acuerdo con su capacitación...</li>
-                            <li>Obtener en forma independiente de la promoción la categoría a niveles más elevados...</li>
-                            <li>Disfrutar con goce de sueldo íntegro los días de descanso obligatorio...</li>
-                            <li>Recibir las prestaciones que otorgue el IMSS...</li>
-                            <li>Participar en los cursos de capacitación...</li>
-                            {/* Lista abreviada para mantener el código limpio, el resto sigue igual */}
+                            <li>Conservar su horario de labores y solicitar el cambio del mismo en los términos del presente Contrato.</li>
+                            <li>Conservar su adscripción de dependencia, su categoría y su nombramiento, no pudiendo ser cambiado sin el consentimiento propio del trabajador y conocimiento del Sindicato.</li>
+                            <li>El trabajador tendrá el derecho a que se reubique de acuerdo con su capacitación para su desempeño, previo consentimiento de la Universidad y el trabajador, con conocimiento del Sindicato.</li>
+                            <li>Obtener en forma independiente de la promoción la categoría a niveles más elevados, así como los aumentos establecidos al revisar anualmente los salarios de los trabajadores.</li>
+                            <li>Disfrutar con goce de sueldo íntegro los días de descanso obligatorio que determina este Contrato.</li>
+                            <li>Recibir las prestaciones que otorgue el IMSS en los términos de los convenios celebrados con el mismo.</li>
+                            <li>Participar en los cursos de capacitación que imparta la Universidad para mejorar su preparación y eficiencia.</li>
+                            <li>Participar en los congresos, consejos y asambleas generales del Sindicato, con aviso de 48 horas de anticipación.</li>
+                            <li>Recibir en buenas condiciones los útiles y herramientas necesarios para el desempeño de su trabajo.</li>
+                            <li>Recibir el salario en el tiempo y lugar convenidos, respetándose su contrato y continuando sus servicios cuando se someta a cualquier conflicto laboral ante la Comisión Mixta de Conciliación y Resolución, conforme al presente Contrato y al Reglamento Interior de Trabajo.</li>
+                            <li>Recibir información de orden técnico y administrativo necesaria para el desempeño de su trabajo.</li>
+                            <li>Gozar de tolerancia por parte de la Universidad cuando curse estudios de educación primaria, media, media superior, bachillerato, superior o posgrado, para asistir a sus clases por un tiempo que no excederá de 45 minutos, computado como tiempo efectivamente laborado, previa comprobación de escolaridad y turno. Asimismo, se otorgarán facilidades a quienes estudien en modalidad semiescolarizada para ajustar su horario.</li>
+                            <li>Mantenerse incorporados al Instituto Mexicano del Seguro Social, en los términos de los convenios respectivos.</li>
+                            <li>Recibir permiso para asistir a consultas médicas del IMSS que únicamente se otorguen dentro de la jornada laboral, debiendo comprobarlo con la constancia correspondiente.</li>
+                            <li>Durante el periodo de lactancia, las madres trabajadoras tendrán derecho a dos periodos de reposo extraordinarios por día, de media hora cada uno, para alimentar a sus hijos, a elección de la trabajadora, durante los primeros seis meses de edad del menor.</li>
+                            <li>Obtener participación en los planes y programas de vivienda establecidos por la Universidad, con terrenos donados para este fin y planes de financiamiento para construcción.</li>
                         </ol>
                     </div>
                     <button className="back-button" onClick={() => setCurrentView('welcome')}>
@@ -587,11 +637,16 @@
                     <h2 className="content-title">Cláusula 89 - Obligaciones</h2>
                     <div className="content-text">
                         <ol>
-                            <li>Cumplir las disposiciones de las normas de trabajo...</li>
-                            <li>Desempeñar sus labores en el lugar de adscripción...</li>
-                            <li>Asistir con puntualidad al desempeño de sus labores...</li>
-                            <li>Desempeñar las funciones propias de su cargo...</li>
-                            <li>Guardar reserva de los asuntos que lleguen a su conocimiento...</li>
+                            <li>Cumplir las disposiciones de las normas de trabajo que le sean aplicables.</li>
+                            <li>Desempeñar sus labores en el lugar de adscripción y no abandonarlo sin debida autorización.</li>
+                            <li>Asistir con puntualidad al desempeño de sus labores, cumpliendo con las jornadas y horarios de trabajo, debiendo registrar sus asistencias tanto al inicio como al término de su jornada laboral a través de los mecanismos que para ello determine la Institución.</li>
+                            <li>Desempeñar las funciones propias de su cargo con la intensidad y calidad que éste requiera.</li>
+                            <li>Guardar reserva de los asuntos que lleguen a su conocimiento con motivo de su trabajo.</li>
+                            <li>Obedecer las órdenes e instrucciones que reciban de sus superiores en asuntos propios del servicio. Una vez cumplidos, expresarán las objeciones que en su caso ameriten.</li>
+                            <li>Comportarse con la discreción debida en el desempeño de su cargo.</li>
+                            <li>Observar buena conducta en el desempeño de su cargo.</li>
+                            <li>Desempeñar el servicio bajo la dirección de la Universidad o de su representante, a cuya autoridad estarán subordinados en todo lo concerniente al trabajo, propio de sus funciones.</li>
+                            <li>Dar aviso inmediato a la Universidad por conducto de sus superiores, salvo caso fortuito o fuerza mayor, de las causas justificadas que le impidan concurrir a su trabajo.</li>
                         </ol>
                     </div>
                     <button className="back-button" onClick={() => setCurrentView('welcome')}>
@@ -599,13 +654,15 @@
                     </button>
                 </div>
             );
+
             
-            // CAMBIO: Incorporación de Folleto.png con diseño responsivo
+            // CAMBIO: Lógica para el zoom de la imagen
             const renderFolleto = () => (
                 <div className="content-card">
                     <h2 className="content-title">Información de Interés</h2>
                     <div className="content-text">
-                        <div className="folleto-container">
+                        {/* Al hacer clic en el contenedor, activamos el zoom */}
+                        <div className="folleto-container" onClick={() => setIsZoomed(true)} title="Clic para ampliar">
                             <img 
                                 src="Folleto.png" 
                                 alt="Folleto informativo UDG" 
@@ -614,12 +671,20 @@
                             />
                         </div>
                         <p style={{marginTop: '1rem', fontSize: '0.85rem', textAlign: 'center', color: '#666'}}>
-                            * Toque la imagen para ampliar si es necesario.
+                            * Toque la imagen para ampliar.
                         </p>
                     </div>
+                    
                     <button className="back-button" onClick={() => setCurrentView('welcome')}>
                         ← Regresar al menú
                     </button>
+
+                    {/* RENDERIZADO CONDICIONAL DEL ZOOM (LIGHTBOX) */}
+                    {isZoomed && (
+                        <div className="lightbox-overlay" onClick={() => setIsZoomed(false)}>
+                            <img src="Folleto.png" className="lightbox-img" alt="Folleto Ampliado" />
+                        </div>
+                    )}
                 </div>
             );
             
